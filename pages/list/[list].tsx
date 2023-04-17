@@ -27,7 +27,7 @@ const TodoList: FC<Props> = ({ todos, listId, listName }) => {
   });
 
   return (
-    <Layout title={`Todo list - ${listName}`} hasBackButton>
+    <Layout title={listName} hasBackButton>
       <Grid>
         <TodoItemCardSkeleton todo_listId={listId} />
         <TodoItemFilter />
