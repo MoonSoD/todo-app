@@ -1,6 +1,11 @@
 import React, { FC } from "react";
 import { todoListFetcher } from "@services/todo-list/todo-list";
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+} from "next";
 import {
   Grid,
   Layout,
@@ -11,7 +16,7 @@ import {
 import { useTodoListQuery } from "@services/todo-list";
 import { useSearch } from "@hooks/use-search";
 
-type Props = InferGetStaticPropsType<typeof getStaticProps>;
+type Props = InferGetStaticPropsType<typeof getServerSideProps>;
 
 const TodoList: FC<Props> = ({ todos, listId, listName }) => {
   const search = useSearch();
@@ -39,11 +44,21 @@ const TodoList: FC<Props> = ({ todos, listId, listName }) => {
   );
 };
 
-export async function getStaticProps({ params }: GetStaticPropsContext) {
+export async function getServerSideProps({
+  params,
+}: GetServerSidePropsContext) {
   const listId = params.list as string;
 
-  const list = await todoListFetcher.getOne(listId);
-  const todos = await todoListFetcher.getOneWith(listId, "todo_item");
+  let list, todos;
+
+  try {
+    list = await todoListFetcher.getOne(listId);
+    todos = await todoListFetcher.getOneWith(listId, "todo_item");
+  } catch (exception) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
@@ -54,7 +69,7 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
   };
 }
 
-export async function getStaticPaths() {
+/*export async function getStaticPaths() {
   const todoLists = await todoListFetcher.getAll();
 
   const paths = todoLists.map((list) => ({
@@ -62,6 +77,6 @@ export async function getStaticPaths() {
   }));
 
   return { paths, fallback: true };
-}
+}*/
 
 export default TodoList;
