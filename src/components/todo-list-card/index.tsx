@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { TodoList, useTodoListMutation } from "@services/todo-list";
 import Link from "next/link";
+import dayjs from "dayjs";
 
 export const TodoListCard: FC<TodoList> = ({ id, name, createdAt }) => {
   const deleteTodoList = useTodoListMutation().remove();
@@ -10,7 +11,9 @@ export const TodoListCard: FC<TodoList> = ({ id, name, createdAt }) => {
       <div className="h-full flex flex-col justify-between">
         <div className="flex justify-between">
           <Link href={`/list/${id}`}>
-            <h3 className="cursor-pointer text-black text-xl hover:">{name}</h3>
+            <h3 className="cursor-pointer text-black text-xl truncate">
+              {name}
+            </h3>
           </Link>
           <button
             onClick={() => deleteTodoList.mutate({ id })}
@@ -19,7 +22,9 @@ export const TodoListCard: FC<TodoList> = ({ id, name, createdAt }) => {
             delete
           </button>
         </div>
-        <p className="text-gray-400">{new Date(createdAt).toLocaleString()}</p>
+        <p className="text-gray-400">
+          {dayjs(createdAt).format("DD MMMM YYYY hh:mm")}
+        </p>
       </div>
     </article>
   );

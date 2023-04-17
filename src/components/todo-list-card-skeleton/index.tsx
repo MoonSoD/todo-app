@@ -1,8 +1,12 @@
-import React, { FC } from "react";
+import { FC, KeyboardEvent, useEffect } from "react";
 import { useTodoListMutation } from "@services/todo-list";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+interface FormValues {
+  name: string;
+}
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -11,28 +15,29 @@ const schema = yup.object({
 export const TodoListCardSkeleton: FC = () => {
   const createTodoList = useTodoListMutation().create();
 
-  const { register, formState, getValues, reset } = useForm({
+  const { register, formState, reset, handleSubmit } = useForm<FormValues>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      name: "",
+    },
   });
 
-  const createTodoListMutation = () => {
-    createTodoList.mutate({ name: getValues("name") });
-
-    if (createTodoList.isSuccess) {
-      reset({ name: "" });
-    }
-  };
-
-  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter") {
-      return;
-    }
-
+  const createTodoListMutation: SubmitHandler<FormValues> = (data) => {
     if (!formState.isValid) {
       return;
     }
 
-    createTodoListMutation();
+    createTodoList.mutate({ ...data });
+  };
+
+  useEffect(() => reset(), [createTodoList.isSuccess]);
+
+  const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    handleSubmit(createTodoListMutation)();
   };
 
   return (
@@ -47,7 +52,7 @@ export const TodoListCardSkeleton: FC = () => {
           />
 
           <button
-            onClick={() => createTodoListMutation()}
+            onClick={() => handleSubmit(createTodoListMutation)()}
             disabled={!formState.isValid}
             className="text-lightgreen disabled:opacity-20 disabled:cursor-not-allowed"
           >

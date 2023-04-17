@@ -7,3 +7,5 @@ export interface TodoItem {
   deadline: string;
   completed: boolean;
 }
+
+export { useTodoItemMutation } from "./todo-item.mutation";

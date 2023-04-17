@@ -1,10 +1,13 @@
-import React from "react";
+import { FC } from "react";
 import { useTodoListQuery } from "@services/todo-list";
-import { Grid, TodoListCard, TodoListCardSkeleton } from "@components";
+import { Grid, Layout, TodoListCard, TodoListCardSkeleton } from "@components";
 import { todoListFetcher } from "@services/todo-list/todo-list";
+import { InferGetStaticPropsType } from "next";
 
-const Index: React.FC = ({ todoLists }) => {
-  const todoLists = useTodoListQuery().all({
+type Props = InferGetStaticPropsType<typeof getStaticProps>;
+
+const Index: FC<Props> = ({ todoLists }) => {
+  const todoListItems = useTodoListQuery().all({
     initialData: todoLists,
     variables: {
       filter: [
@@ -15,12 +18,14 @@ const Index: React.FC = ({ todoLists }) => {
   });
 
   return (
-    <Grid>
-      <TodoListCardSkeleton />
-      {todoLists.data?.map((list) => (
-        <TodoListCard key={list.id} {...list} />
-      ))}
-    </Grid>
+    <Layout title="Todo lists">
+      <Grid>
+        <TodoListCardSkeleton />
+        {todoListItems.data?.map((list) => (
+          <TodoListCard key={list.id} {...list} />
+        ))}
+      </Grid>
+    </Layout>
   );
 };
 

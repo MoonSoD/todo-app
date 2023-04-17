@@ -7,6 +7,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Layout } from "@components";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SearchProvider } from "@hooks/use-search";
 
 type AppPropsWithDehydratedState = AppProps & {
   pageProps: { dehydratedState: unknown };
@@ -23,9 +24,9 @@ function MyApp({
       <Hydrate state={pageProps.dehydratedState}>
         <>
           <ToastContainer />
-          <Layout>
+          <SearchProvider>
             <Component {...pageProps} />
-          </Layout>
+          </SearchProvider>
         </>
       </Hydrate>
     </QueryClientProvider>

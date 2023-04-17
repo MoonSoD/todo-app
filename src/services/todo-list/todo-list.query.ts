@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 type UseTodoListQuery = () => {
   all: QueryHook<TodoList[], FilterVars<TodoList>, unknown>;
   one: QueryHook<TodoList, FindVars, unknown>;
-  oneAllItems: QueryHook<TodoItem[], FindVars, unknown>;
+  oneAllItems: QueryHook<TodoItem[], FindFilterVars<TodoItem>, unknown>;
 };
 
 export const useTodoListQuery: UseTodoListQuery = () => {
@@ -27,7 +27,7 @@ export const useTodoListQuery: UseTodoListQuery = () => {
   const oneAllItems = createQuery<TodoItem[], FindFilterVars<TodoItem>>({
     primaryKey: "todo_list.todo_items",
     queryFn: ({ queryKey: [, vars] }) =>
-      todoListFetcher.getOneWith(vars.id, "todo_item"),
+      todoListFetcher.getOneWith(vars.id, "todo_item", vars.filter),
   });
 
   return {

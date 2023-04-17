@@ -10,7 +10,10 @@ export abstract class Fetcher<TModel> {
   }
 
   static toQueryString(filter?: FetcherFilterCriteria<never>): string {
-    const searchParams = new URLSearchParams(filter as string[][]);
+    const parsedFilter = filter?.filter(
+      (criteria) => criteria[1] !== undefined && criteria[1] !== "",
+    );
+    const searchParams = new URLSearchParams(parsedFilter as string[][]);
 
     return searchParams.toString();
   }
